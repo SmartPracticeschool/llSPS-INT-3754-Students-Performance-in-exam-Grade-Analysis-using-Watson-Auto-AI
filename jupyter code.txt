@@ -1,0 +1,39 @@
+
+import numpy as np
+import pandas as pd
+df=pd.read_csv('StudentsPerformance.csv')
+df['Total Percentage']= ((df.iloc[:, 5:].sum(axis=1))/300)*100
+x=df.iloc[:,0:8].values
+y=df.iloc[:,8:].values
+import sklearn
+from sklearn.preprocessing import LabelEncoder
+lb=LabelEncoder()
+df['gender']=lb.fit_transform(df['gender'])
+df['race/ethnicity']=lb.fit_transform(df['race/ethnicity'])
+df['parental level of education']=lb.fit_transform(df['parental level of education'])
+df['lunch']=lb.fit_transform(df['lunch'])
+df['test preparation course']=lb.fit_transform(df['test preparation course'])
+x=df.iloc[:,0:8].values
+y=df.iloc[:,8:].values
+from sklearn.model_selection import train_test_split
+x_train,x_test,y_train,y_test=train_test_split(x,y,test_size=0.2,random_state=0)
+from sklearn.linear_model import LinearRegression
+mr=LinearRegression()
+mr.fit(x_train,y_train)
+from joblib import dump
+mr.predict(x_test)
+
+from sklearn.preprocessing import PolynomialFeatures
+poly=PolynomialFeatures(degree=2)
+x_poly=poly.fit_transform(x)
+x_poly
+from sklearn.linear_model import LinearRegression
+pr=LinearRegression()
+pr.fit(x_poly,y)
+dump(pr,"scaler.save")
+y_pred=pr.predict(x_poly)
+import pickle
+pickle.dump(pr,open('decision.pkl','wb'))
+
+y_predict=mr.predict(x_test)
+mr=LinearRegression()
